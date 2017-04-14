@@ -10,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -54,6 +56,16 @@ public class MainActivity extends AppCompatActivity {
         friendListView.setAdapter(friendListAdapter);
 
         loadingDialog = new MainLoadingDialog(this);
+
+        friendListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, ChatRoomActivity.class);
+                intent.putExtra("target_id", friendArrayList.get(position).getUserID());
+                intent.putExtra("target_name", friendArrayList.get(position).getDisplayName());
+                startActivity(intent);
+            }
+        });
 
     }
 

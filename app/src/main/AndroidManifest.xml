@@ -42,7 +42,8 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".AddFdActivity" />
         <activity android:name=".RegistrationActivity" />
-        <activity android:name=".PendingFdActivity"></activity>
+        <activity android:name=".PendingFdActivity" />
+        <activity android:name=".ChatRoomActivity"></activity>
     </application>
 
 </manifest>

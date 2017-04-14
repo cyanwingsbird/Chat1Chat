@@ -17,8 +17,9 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/SeaGreen"
+            app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
             app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:title="They want to be your friend !!"/>
+            app:title="They want to be your friend !!" />
 
     </android.support.design.widget.AppBarLayout>
 
