@@ -86,12 +86,12 @@ public class AddFdActivity extends AppCompatActivity {
                                             .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    finish();
                                                 }
                                             })
                                             .setNegativeButton("Back", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
+                                                    finish();
                                                 }
                                             })
                                             .create();

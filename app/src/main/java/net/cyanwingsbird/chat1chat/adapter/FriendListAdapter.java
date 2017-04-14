@@ -8,7 +8,8 @@ import android.widget.TextView;
 
 import net.cyanwingsbird.chat1chat.R;
 import net.cyanwingsbird.chat1chat.dataset.Friend;
-import net.cyanwingsbird.chat1chat.dataset.FriendList;
+
+import java.util.ArrayList;
 
 
 /**
@@ -19,19 +20,19 @@ public class FriendListAdapter extends BaseAdapter {
     static final String TAG = "FriendListAdapter";
 
     Context context;
-    FriendList items;
+    ArrayList<Friend> items;
 
-    public FriendListAdapter(Context context, FriendList items) {
+    public FriendListAdapter(Context context, ArrayList<Friend> items) {
         this.context = context;
         this.items = items;
     }
 
     public int getCount() {
-        return items.getFriendArrayList().size();
+        return items.size();
     }
 
     public Object getItem(int position) {
-        return items.getFriendArrayList().get(position);
+        return items.get(position);
     }
 
     public long getItemId(int position) {
@@ -40,7 +41,6 @@ public class FriendListAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        Friend current_friend = items.getFriendArrayList().get(position);
         ViewHolder viewHolder = null;
 
         if (convertView == null) {
@@ -54,7 +54,7 @@ public class FriendListAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-      //  viewHolder.friendName.setText(current_friend.getName());
+        viewHolder.friendName.setText(items.get(position).getDisplayName());
         return convertView;
         }
 
