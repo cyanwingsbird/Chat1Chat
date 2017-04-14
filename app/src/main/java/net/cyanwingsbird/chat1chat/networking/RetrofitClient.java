@@ -30,4 +30,35 @@ public class RetrofitClient {
         }
         return  call;
     }
+
+    public Call addFd(String username, String password, String fdUserID) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Global.getServerURL())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        Call<APIStatus> call = null;
+        try {
+            RetrofitInterface retrofitInterface = retrofit.create(RetrofitInterface.class);
+            call = retrofitInterface.addFd(username, password, fdUserID);
+        } catch (Exception e) {
+            Log.i(TAG, "Error " + e);
+        }
+        return  call;
+    }
+
+    public Call registration(String username, String password, String display_name) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Global.getServerURL())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        Call<APIStatus> call = null;
+        try {
+            RetrofitInterface retrofitInterface = retrofit.create(RetrofitInterface.class);
+            call = retrofitInterface.registration(username, password, display_name);
+        } catch (Exception e) {
+            Log.i(TAG, "Error " + e);
+        }
+        return  call;
+    }
+
 }

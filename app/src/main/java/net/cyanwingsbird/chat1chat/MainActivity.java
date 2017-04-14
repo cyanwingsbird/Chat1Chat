@@ -2,6 +2,7 @@ package net.cyanwingsbird.chat1chat;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -32,7 +33,8 @@ public class MainActivity extends AppCompatActivity {
         Dialog dialog;
         switch (item.getItemId()) {
             case R.id.menu_add_fd:
-
+                Intent intent = new Intent(MainActivity.this, AddFdActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.menu_show_pending:
                 dialog = new AlertDialog.Builder(MainActivity.this)

@@ -6,13 +6,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context="net.cyanwingsbird.chat1chat.LoginActivity">
+    tools:context="net.cyanwingsbird.chat1chat.RegistrationActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/SeaGreen"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
+            app:title="Registration"/>
+
+    </android.support.design.widget.AppBarLayout>
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="100sp"
         android:layout_marginTop="90dp"
-        app:srcCompat="@drawable/icon_color"
+        app:srcCompat="@drawable/ic_fiber_new_black_24dp"
         android:id="@+id/imageView_icon"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
@@ -67,60 +83,49 @@
         android:paddingRight="10dp"
         android:drawableLeft="@drawable/ic_https_blue_40dp"/>
 
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:layout_below="@+id/editText_password"
+        android:layout_marginTop="20dp"
+        android:id="@+id/editText_nickname"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/LightGray"
+        android:hint="Nickname"
+        android:drawablePadding="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:drawableLeft="@drawable/ic_tag_faces_blue_40dp"/>
+
     <Button
-        android:text="Login"
+        android:text="Registration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:id="@+id/button_login"
-        android:layout_below="@+id/checkBox"
+        android:id="@+id/button_registration"
+        android:layout_below="@+id/editText_nickname"
         android:background="@color/MainColor_light"
         android:textColor="@color/White"
         android:textSize="18sp"
         android:layout_marginLeft="80dp"
         android:layout_marginRight="80dp"
-        android:layout_alignLeft="@+id/checkBox"
-        android:layout_alignStart="@+id/checkBox"
+        android:layout_alignLeft="@+id/editText_nickname"
+        android:layout_alignStart="@+id/editText_nickname"
         android:layout_alignRight="@+id/editText_password"
         android:layout_alignEnd="@+id/editText_password" />
 
-    <CheckBox
-        android:text="Remember me"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_below="@+id/editText_password"
-        android:layout_alignLeft="@+id/editText_password"
-        android:layout_alignStart="@+id/editText_password"
-        android:textColor="@color/Black"
-        android:id="@+id/checkBox"
-        android:textSize="16sp"/>
 
-    <TextView
-        android:id="@+id/textView_forget"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/editText_password"
-        android:layout_alignRight="@+id/editText_password"
-        android:layout_alignTop="@+id/checkBox"
-        android:layout_marginTop="5dp"
-        android:text="Don't have an account?"
-        android:textColor="@color/Black"
-        android:textSize="16sp"
-        android:textStyle="normal|italic" />
 
-    <TextView
-        android:text="For testing purpose, \nPlease enter the guest account\nUsername: testing \nPassword: testing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/checkBox"
-        android:layout_alignStart="@+id/checkBox"
-        android:id="@+id/textView3"
-        android:visibility="visible"
-        android:layout_below="@+id/button_login"
-        android:layout_margin="10dp"
-        android:textStyle="normal|bold"
-        android:textColor="@color/Black" />
+
+
+
 
 </RelativeLayout>

@@ -40,7 +40,8 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme" />
-        <activity android:name=".AddFdActivity"></activity>
+        <activity android:name=".AddFdActivity" />
+        <activity android:name=".RegistrationActivity"></activity>
     </application>
 
 </manifest>

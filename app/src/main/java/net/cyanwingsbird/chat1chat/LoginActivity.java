@@ -46,9 +46,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(LoginActivity.this);
         final MainLoadingDialog mainLoadingDialog = new MainLoadingDialog(this);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            this.getWindow().setStatusBarColor(this.getResources().getColor(R.color.Black));
-        }
 
         button_login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,15 +94,8 @@ public class LoginActivity extends AppCompatActivity {
         textView_forget.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Dialog dialog = new AlertDialog.Builder(LoginActivity.this)
-                        .setMessage("Coming Soon")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        })
-                        .create();
-                dialog.show();
+                Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
+                startActivity(intent);
             }
         });
 
