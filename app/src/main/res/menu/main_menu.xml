@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_add_fd"
+        android:title="Add New Friend"
+        android:icon="@drawable/ic_add_white_24dp"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/menu_show_pending"
+        android:title="Show Pending List" />
+    <item android:id="@+id/menu_setting"
+        android:title="Setting" />
+</menu>
