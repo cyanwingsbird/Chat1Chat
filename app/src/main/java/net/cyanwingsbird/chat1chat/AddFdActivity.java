@@ -1,6 +1,9 @@
 package net.cyanwingsbird.chat1chat;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -65,7 +68,6 @@ public class AddFdActivity extends AppCompatActivity {
                 String password = Global.getLoginInfo().getPassword();
                 String fdUserId = fd_userID_editText.getText().toString();
 
-
                 loadingDialog.show();
 
                 RetrofitClient retrofitClient = new RetrofitClient();
@@ -79,7 +81,23 @@ public class AddFdActivity extends AppCompatActivity {
                                 if(response.body()==null) {
                                     Toast.makeText(AddFdActivity.this, "User ID not exist !", Toast.LENGTH_SHORT).show();
                                 }else {
-                                    Toast.makeText(AddFdActivity.this, "Request success !", Toast.LENGTH_SHORT).show();
+                                    Dialog dialog = new AlertDialog.Builder(AddFdActivity.this)
+                                            .setMessage("Request success !")
+                                            .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    finish();
+                                                }
+                                            })
+                                            .setNegativeButton("Back", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                }
+                                            })
+                                            .create();
+                                    dialog.show();
+
+
                                 }
                             }
                         } else {
@@ -94,8 +112,6 @@ public class AddFdActivity extends AppCompatActivity {
                         t.printStackTrace();
                     }
                 });
-
-
             }
         });
 

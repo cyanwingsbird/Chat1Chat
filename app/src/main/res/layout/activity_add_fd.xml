@@ -42,16 +42,17 @@
                 android:text="Your User id: "
                 android:textSize="20dp"
                 android:textColor="@color/Black" />
+
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/myUserIdText"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="30dp"
                 android:text="Friend's User id:"
-                android:textSize="30dp"
-                android:layout_below="@id/myUserIdText"
-                android:textColor="@color/Black" />
+                android:textColor="@color/Black"
+                android:textSize="25dp" />
 
             <EditText
                 android:id="@+id/fd_userID_editText"
@@ -72,7 +73,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/fd_userID_editText"
                 android:layout_marginTop="10dp"
-                android:text="Search"
+                android:text="Add"
                 android:textAllCaps="false"
                 android:textColor="@color/Black"
                 android:textSize="20sp" />
