@@ -1,13 +1,16 @@
 package net.cyanwingsbird.chat1chat;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import net.cyanwingsbird.chat1chat.adapter.FriendListAdapter;
 import net.cyanwingsbird.chat1chat.adapter.PendingListAdapter;
 import net.cyanwingsbird.chat1chat.dataset.Friend;
 import net.cyanwingsbird.chat1chat.networking.APIStatus;
@@ -51,6 +54,54 @@ public class PendingFdActivity extends AppCompatActivity {
         pendingListView.setAdapter(pendingListAdapter);
 
         loadingDialog = new MainLoadingDialog(this);
+
+        pendingListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String username = Global.getLoginInfo().getUsername();
+                String password = Global.getLoginInfo().getPassword();
+                String target_id = pendingArrayList.get(position).getUserID();
+
+                loadingDialog.show();
+                RetrofitClient retrofitClient = new RetrofitClient();
+                Call<APIStatus> call = retrofitClient.acceptPendingFd(username, password, target_id);
+                call.enqueue(new Callback<APIStatus>() {
+                    @Override
+                    public void onResponse(Call<APIStatus> call, Response<APIStatus> response) {
+                        loadingDialog.dismiss();
+                        if (response.isSuccessful()) {
+                            if (response.code() == 202) {
+                                if(response.body()==null) {
+                                    Toast.makeText(PendingFdActivity.this, "Connection error !!", Toast.LENGTH_SHORT).show();
+                                }else {
+                                    Dialog dialog = new AlertDialog.Builder(PendingFdActivity.this)
+                                            .setMessage("Request success !!")
+                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    getFriendList();
+                                                }
+                                            })
+                                            .create();
+                                    dialog.show();
+                                }
+                            }
+                        } else {
+                            APIStatus error = StatusUtils.parseError(response);
+                            Toast.makeText(PendingFdActivity.this, "Error code: " + error.status() + ": " + error.message(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<APIStatus> call, Throwable t) {
+                        loadingDialog.dismiss();
+                        Toast.makeText(PendingFdActivity.this, "Network Connection fail !!", Toast.LENGTH_LONG).show();
+                        t.printStackTrace();
+                    }
+                });
+
+
+            }
+        });
     }
 
     @Override

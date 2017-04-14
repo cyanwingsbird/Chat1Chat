@@ -38,5 +38,9 @@ public interface RetrofitInterface {
     @POST("getPendingList.php")
     Call<ArrayList<Friend>> getPendingList(@Field("username") String username, @Field("password") String password);
 
+    @FormUrlEncoded
+    @POST("acceptPendingFd.php")
+    Call<APIStatus> acceptPendingFd(@Field("username") String username, @Field("password") String password, @Field("fdUserID") String fdUserID);
+
 
 }

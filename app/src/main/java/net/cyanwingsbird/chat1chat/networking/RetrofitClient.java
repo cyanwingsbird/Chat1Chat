@@ -94,5 +94,20 @@ public class RetrofitClient {
         return  call;
     }
 
+    public Call acceptPendingFd(String username, String password, String fdUserID) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Global.getServerURL())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        Call<APIStatus> call = null;
+        try {
+            RetrofitInterface retrofitInterface = retrofit.create(RetrofitInterface.class);
+            call = retrofitInterface.acceptPendingFd(username, password, fdUserID);
+        } catch (Exception e) {
+            Log.i(TAG, "Error " + e);
+        }
+        return  call;
+    }
+
 
 }
