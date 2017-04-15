@@ -2,6 +2,7 @@ package net.cyanwingsbird.chat1chat.networking;
 
 
 import net.cyanwingsbird.chat1chat.dataset.Friend;
+import net.cyanwingsbird.chat1chat.dataset.Message;
 import net.cyanwingsbird.chat1chat.userAccount.AccountInfo;
 
 import java.util.ArrayList;
@@ -55,7 +56,9 @@ public interface RetrofitInterface {
     Call<APIStatus> sendMsg(@Part("username") RequestBody username, @Part("password") RequestBody password, @Part("receiver_ID") RequestBody receiver_ID,
                             @Part("message_type") RequestBody message_type, @Part("message_content") RequestBody message_content,  @Part MultipartBody.Part upload_file);
 
-
+    @FormUrlEncoded
+    @POST("getMsg.php")
+    Call<ArrayList<Message>> getMsg(@Field("username") String username, @Field("password") String password, @Field("friendID") String friendID);
 
 
 

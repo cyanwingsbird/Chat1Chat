@@ -1,12 +1,19 @@
 package net.cyanwingsbird.chat1chat.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.VideoView;
+
+import com.squareup.picasso.Picasso;
 
 import net.cyanwingsbird.chat1chat.ChatRoomActivity;
+import net.cyanwingsbird.chat1chat.Global;
+import net.cyanwingsbird.chat1chat.R;
 import net.cyanwingsbird.chat1chat.dataset.Message;
 
 import java.util.ArrayList;
@@ -41,63 +48,76 @@ public class MessageAdapter extends BaseAdapter {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        /*
-        Message current_messsage = items.getMessages().get(position);
 
+        Message current_message = items.get(position);
+        if (chatRoomActivity == null) {
+            chatRoomActivity = (ChatRoomActivity) context;
+        }
         boolean isComMsg;
-        ViewHolder viewHolder = null;
-        if(current_messsage.getSender().toString().equals(Global.getAccountInfo().getUserid()))
-        {
+        if (current_message.getFromUserID().toString().equals(Global.getAccountInfo().getUserID())) {
             isComMsg = false;
-        }else
-        {
+        } else {
             isComMsg = true;
         }
-   //     if (convertView == null) {
-            if (isComMsg) {
-                convertView = View.inflate(context.getApplicationContext(),
-                        R.layout.item_chatting_other, null);
-            } else {
-                convertView = View.inflate(context.getApplicationContext(),
-                        R.layout.item_chatting_myself, null);
+
+        if (isComMsg) {
+            if(current_message.getMessageType().equals("2")) {
+                convertView = View.inflate(context.getApplicationContext(), R.layout.item_image_other, null);
+                ImageView tv_chatImage = (ImageView) convertView.findViewById(R.id.tv_chatImage);
+                Picasso.with(chatRoomActivity)
+                        .load(Global.getServerURL() + current_message.getMessageContent())
+                        .placeholder(R.drawable.ic_sync_black_24dp)
+                        .into(tv_chatImage);
+            }else if(current_message.getMessageType().equals("3")) {
+                convertView = View.inflate(context.getApplicationContext(), R.layout.item_video_other, null);
+                ImageView tv_chatVideo = (ImageView) convertView.findViewById(R.id.tv_chatVideo);
+            }else{
+                convertView = View.inflate(context.getApplicationContext(), R.layout.item_chatting_other, null);
+                TextView tvContent = (TextView) convertView.findViewById(R.id.tv_chatcontent);
+                tvContent.setText(current_message.getMessageContent());
             }
 
-            viewHolder = new ViewHolder();
-            viewHolder.tvUserName = (TextView) convertView
-                    .findViewById(R.id.tv_username);
-            viewHolder.tvContent = (TextView) convertView
-                    .findViewById(R.id.tv_chatcontent);
-            viewHolder.isComMsg = isComMsg;
-
-            convertView.setTag(viewHolder);
-
-//        }else {
- //           viewHolder = (ViewHolder) convertView.getTag();
-  //      }
 
 
 
-        if(isComMsg==false)
-        {
-            viewHolder.tvUserName.setText(Global.getLoginInfo().getUsername());
-        }else
-        {
-            if(chatRoomActivity ==null)
-            {
-                chatRoomActivity = (ChatRoomActivity)context;
+        } else {
+            if(current_message.getMessageType().equals("2")) {
+                convertView = View.inflate(context.getApplicationContext(), R.layout.item_image_myself, null);
+                ImageView tv_chatImage = (ImageView) convertView.findViewById(R.id.tv_chatImage);
+                Picasso.with(chatRoomActivity)
+                        .load(Global.getServerURL() + current_message.getMessageContent())
+                        .placeholder(R.drawable.ic_sync_black_24dp)
+                        .into(tv_chatImage);
+            }else if(current_message.getMessageType().equals("3")) {
+                convertView = View.inflate(context.getApplicationContext(), R.layout.item_video_myself, null);
+                ImageView tv_chatVideo = (ImageView) convertView.findViewById(R.id.tv_chatVideo);
+            }else{
+                convertView = View.inflate(context.getApplicationContext(), R.layout.item_chatting_myself, null);
+                TextView tvContent = (TextView) convertView.findViewById(R.id.tv_chatcontent);
+                tvContent.setText(current_message.getMessageContent());
             }
-            viewHolder.tvUserName.setText(chatRoomActivity.getTarget_name());
         }
-        viewHolder.tvContent.setText(current_messsage.getContent());
-        */
+
+        TextView tvUserName = (TextView) convertView.findViewById(R.id.tv_username);
+        ImageView iv_userhead = (ImageView) convertView.findViewById(R.id.iv_userhead);
+        if (isComMsg == false) {
+            tvUserName.setText(Global.getLoginInfo().getUsername());
+            if(Global.getAccountInfo().getProfilePic()!=null) {
+                Picasso.with(chatRoomActivity)
+                        .load(Global.getServerURL() + Global.getAccountInfo().getProfilePic().substring(2))
+                        .placeholder(R.drawable.ic_account_circle_50dp)
+                        .into(iv_userhead);
+            }
+        } else {
+            if(chatRoomActivity.getTarget_profile()!=null) {
+                Picasso.with(chatRoomActivity)
+                        .load(chatRoomActivity.getTarget_profile())
+                        .placeholder(R.drawable.ic_account_circle_50dp)
+                        .into(iv_userhead);
+            }
+            tvUserName.setText(chatRoomActivity.getTarget_name());
+        }
+
         return convertView;
     }
-
-    public static class ViewHolder {
-        public TextView tvUserName;
-        public TextView tvContent;
-        public boolean isComMsg = true;
-    }
-
-
 }

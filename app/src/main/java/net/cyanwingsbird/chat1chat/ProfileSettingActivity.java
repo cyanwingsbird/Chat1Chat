@@ -132,9 +132,8 @@ public class ProfileSettingActivity extends AppCompatActivity {
             public void onClick(View v) {
                 loadingDialog.show();
 
-                final LoginInfo loginInfo = UserAccountManager.getLogin_info();
-                username = loginInfo.getUsername();
-                password = loginInfo.getPassword();
+                username = Global.getLoginInfo().getUsername();
+                password = Global.getLoginInfo().getPassword();
 
                 RetrofitClient retrofitClient = new RetrofitClient();
                 Call<APIStatus> call;

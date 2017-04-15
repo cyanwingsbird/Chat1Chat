@@ -1,0 +1,49 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="6dp">
+
+
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp" >
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/iv_userhead"
+            android:layout_width="@dimen/profile_width"
+            android:layout_height="@dimen/profile_height"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/ic_account_circle_50dp" />
+
+        <ImageView
+            android:id="@+id/tv_chatVideo"
+            android:layout_width="200dp"
+            android:layout_height="160dp"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@id/iv_userhead"
+            android:layout_below="@+id/tv_username"
+            android:src="@drawable/ic_play_arrow_red_50dp"
+            android:background="@color/LightGray"
+            android:padding="40dp"
+            android:gravity="left|center"
+            android:lineSpacingExtra="2dp" />
+
+        <TextView
+            android:id="@+id/tv_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:maxLines="1"
+            android:layout_toLeftOf="@id/iv_userhead"
+            android:gravity="right"
+            android:textColor="@color/DarkGray"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+</LinearLayout>

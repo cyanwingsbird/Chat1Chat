@@ -8,41 +8,31 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import net.cyanwingsbird.chat1chat.adapter.MessageAdapter;
+import net.cyanwingsbird.chat1chat.dataset.Friend;
 import net.cyanwingsbird.chat1chat.dataset.Message;
 import net.cyanwingsbird.chat1chat.networking.APIStatus;
 import net.cyanwingsbird.chat1chat.networking.RetrofitClient;
 import net.cyanwingsbird.chat1chat.networking.StatusUtils;
-import net.cyanwingsbird.chat1chat.userAccount.LoginInfo;
-import net.cyanwingsbird.chat1chat.userAccount.UserAccountManager;
 import net.cyanwingsbird.chat1chat.utility.MainLoadingDialog;
 import net.cyanwingsbird.chat1chat.utility.PictureConverter;
 
@@ -71,6 +61,8 @@ public class ChatRoomActivity extends AppCompatActivity {
     Bitmap bitmap = null;
     Uri audio_uri;
     Uri videoUri;
+
+    Boolean isLoopingReceive = true;
 
     String target_id;
     String target_name;
@@ -101,22 +93,25 @@ public class ChatRoomActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ButterKnife.bind(ChatRoomActivity.this);
-
-        target_id = getIntent().getStringExtra("target_id");
-        target_name = getIntent().getStringExtra("target_name");
-        target_pic = getIntent().getStringExtra("target_pic");
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
-        friend_nickname.setText(target_name);
-        final LoginInfo loginInfo = UserAccountManager.getLogin_info();
-        username = loginInfo.getUsername();
-        password = loginInfo.getPassword();
+        loadingDialog = new MainLoadingDialog(this);
 
-        if(target_pic!=null) {
+        target_id = getIntent().getStringExtra("target_id");
+        target_name = getIntent().getStringExtra("target_name");
+        target_pic = getIntent().getStringExtra("target_pic");
+
+        friend_nickname.setText(target_name);
+
+        username = Global.getLoginInfo().getUsername();
+        password = Global.getLoginInfo().getPassword();
+
+
+        if (target_pic != null) {
             String friendPictureUrl = Global.getServerURL() + target_pic.substring(2);
             Picasso.with(getApplicationContext())
                     .load(friendPictureUrl)
@@ -124,7 +119,31 @@ public class ChatRoomActivity extends AppCompatActivity {
                     .into(profile_pic);
         }
 
-        loadingDialog = new MainLoadingDialog(this);
+        messageAdapter = new MessageAdapter(ChatRoomActivity.this, messages);
+        message_view.setAdapter(messageAdapter);
+
+        getMessageList();
+
+
+        new Thread() {
+            public void run() {
+                while (true) {
+                    try {
+                        sleep(3000);
+                    } catch (InterruptedException e) {
+                    } finally {
+                        if(isLoopingReceive) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                       //             loopingRenewMessage();
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        }.start();
 
         sending_callback = new Callback<APIStatus>() {
             @Override
@@ -143,6 +162,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                     Toast.makeText(ChatRoomActivity.this, "Error code: " + error.status() + ": " + error.message(), Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(Call<APIStatus> call, Throwable t) {
                 loadingDialog.dismiss();
@@ -151,20 +171,43 @@ public class ChatRoomActivity extends AppCompatActivity {
             }
         };
 
+        texting_editText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread() {
+                    public void run() {
+                        try {
+                            sleep(300);
+                        } catch (InterruptedException e) {
+                        } finally {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    message_view.smoothScrollToPosition(messages.size());
+                                }
+                            });
+                        }
+                    }
+                }.start();
+            }
+        });
 
         send_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-      //          Message current_message = new Message();
-       //         current_message.setContent(texting_editText.getText().toString());
-       //         current_message.setSender(Integer.parseInt(Global.getAccountInfo().getUserid()));
+                Message current_message = new Message();
+                current_message.setFromUserID(Global.getAccountInfo().getUserID());
+                current_message.setMessageContent(texting_editText.getText().toString());
+                current_message.setMessageType("1");
+                current_message.setToUserID(target_id);
+                messages.add(current_message);
 
                 String username = Global.getLoginInfo().getUsername();
                 String password = Global.getLoginInfo().getPassword();
 
                 RetrofitClient retrofitClient = new RetrofitClient();
-                Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id, "1" , texting_editText.getText().toString(), null);
+                Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id, "1", texting_editText.getText().toString(), null);
                 call.enqueue(new Callback<APIStatus>() {
                     @Override
                     public void onResponse(Call<APIStatus> call, Response<APIStatus> response) {
@@ -182,6 +225,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                             Toast.makeText(ChatRoomActivity.this, "Error code: " + error.status() + ": " + error.message(), Toast.LENGTH_SHORT).show();
                         }
                     }
+
                     @Override
                     public void onFailure(Call<APIStatus> call, Throwable t) {
                         loadingDialog.dismiss();
@@ -194,8 +238,8 @@ public class ChatRoomActivity extends AppCompatActivity {
                 InputMethodManager imm = (InputMethodManager) getSystemService(
                         INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-//                messageAdapter.notifyDataSetChanged();
-//                message_view.smoothScrollToPosition(messages.size());
+                messageAdapter.notifyDataSetChanged();
+                message_view.smoothScrollToPosition(messages.size());
 
             }
         });
@@ -248,9 +292,11 @@ public class ChatRoomActivity extends AppCompatActivity {
                 return true;
             case R.id.menu_send_video:
                 intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 10); //15 sec
+                intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 52428800L); //50MB
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intent, VIDEO);
-                }else {
+                } else {
                     Toast.makeText(ChatRoomActivity.this, "There are no camera app in your phone !!", Toast.LENGTH_LONG).show();
                 }
                 return true;
@@ -300,7 +346,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                     if (bitmap == null) {
                                         Toast.makeText(ChatRoomActivity.this, "File loading error", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id , "2", "", file_pic);
+                                        Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id, "2", "", file_pic);
                                         call.enqueue(sending_callback);
                                     }
                                 }
@@ -333,7 +379,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                     if (audio_file == null) {
                                         Toast.makeText(ChatRoomActivity.this, "File loading error", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id , "5", "", audio_file);
+                                        Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id, "5", "", audio_file);
                                         call.enqueue(sending_callback);
                                     }
                                 }
@@ -364,7 +410,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                 if (video_file == null) {
                                     Toast.makeText(ChatRoomActivity.this, "File loading error", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id , "3", "", video_file);
+                                    Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id, "3", "", video_file);
                                     call.enqueue(sending_callback);
                                 }
                             }
@@ -373,10 +419,84 @@ public class ChatRoomActivity extends AppCompatActivity {
                 dialog.show();
             }
 
-
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+    public void getMessageList() {
+        loadingDialog.show();
+        String username = Global.getLoginInfo().getUsername();
+        String password = Global.getLoginInfo().getPassword();
+
+        RetrofitClient retrofitClient = new RetrofitClient();
+        Call<ArrayList<Message>> call = retrofitClient.getMsg(username, password, target_id);
+        call.enqueue(new Callback<ArrayList<Message>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Message>> call, Response<ArrayList<Message>> response) {
+                loadingDialog.dismiss();
+                if (response.isSuccessful()) {
+                    if (response.code() == 202) {
+                        if(response.body()==null) {
+                            Toast.makeText(ChatRoomActivity.this, "Say something with your friend ^_^", Toast.LENGTH_SHORT).show();
+                        }else {
+                            messages.clear();
+                            messages.addAll(response.body());
+                            messageAdapter.notifyDataSetChanged();
+                            message_view.smoothScrollToPosition(messages.size());
+                        }
+                    }
+                } else {
+                    APIStatus error = StatusUtils.parseError(response);
+                    Toast.makeText(ChatRoomActivity.this, "Error code: " + error.status() + ": " + error.message(), Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<ArrayList<Message>> call, Throwable t) {
+                loadingDialog.dismiss();
+                Toast.makeText(ChatRoomActivity.this, "Network Connection fail !!", Toast.LENGTH_LONG).show();
+                t.printStackTrace();
+            }
+        });
+
+
+    }
+
+    public void loopingRenewMessage() {
+        String username = Global.getLoginInfo().getUsername();
+        String password = Global.getLoginInfo().getPassword();
+
+        RetrofitClient retrofitClient = new RetrofitClient();
+        Call<ArrayList<Message>> call = retrofitClient.getMsg(username, password, target_id);
+        call.enqueue(new Callback<ArrayList<Message>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Message>> call, Response<ArrayList<Message>> response) {
+                loadingDialog.dismiss();
+                if (response.isSuccessful()) {
+                    if (response.code() == 202) {
+                        if(response.body()==null) {
+                            Toast.makeText(ChatRoomActivity.this, "Say something with your friend ^_^", Toast.LENGTH_SHORT).show();
+                        }else {
+                            messages.clear();
+                            messages.addAll(response.body());
+                            messageAdapter.notifyDataSetChanged();
+                        }
+                    }
+                } else {
+                    APIStatus error = StatusUtils.parseError(response);
+                    Toast.makeText(ChatRoomActivity.this, "Error code: " + error.status() + ": " + error.message(), Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<ArrayList<Message>> call, Throwable t) {
+                loadingDialog.dismiss();
+                Toast.makeText(ChatRoomActivity.this, "Network Connection fail !!", Toast.LENGTH_LONG).show();
+                t.printStackTrace();
+            }
+        });
+
+    }
+
+
     private String getRealPathFromURI(Uri contentURI) {
         String result;
         Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
@@ -390,4 +510,18 @@ public class ChatRoomActivity extends AppCompatActivity {
         }
         return result;
     }
+
+    public String getTarget_name() {
+        return target_name;
+    }
+
+    public String getTarget_profile() {
+        if(target_pic!=null) {
+            return Global.getServerURL() + target_pic.substring(2);
+        }else {
+            return null;
+        }
+    }
+
+
 }

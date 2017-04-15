@@ -4,6 +4,7 @@ import android.util.Log;
 
 import net.cyanwingsbird.chat1chat.Global;
 import net.cyanwingsbird.chat1chat.dataset.Friend;
+import net.cyanwingsbird.chat1chat.dataset.Message;
 import net.cyanwingsbird.chat1chat.userAccount.AccountInfo;
 
 import java.io.File;
@@ -165,6 +166,21 @@ public class RetrofitClient {
         try {
             RetrofitInterface retrofitInterface = retrofit.create(RetrofitInterface.class);
             call = retrofitInterface.sendMsg(username_body, password_body, receiver_body, message_type_body, message_content_body, file_part);
+        } catch (Exception e) {
+            Log.i(TAG, "Error " + e);
+        }
+        return  call;
+    }
+
+    public Call getMsg(String username, String password, String fdUserID) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Global.getServerURL())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        Call<ArrayList<Message>> call = null;
+        try {
+            RetrofitInterface retrofitInterface = retrofit.create(RetrofitInterface.class);
+            call = retrofitInterface.getMsg(username, password, fdUserID);
         } catch (Exception e) {
             Log.i(TAG, "Error " + e);
         }
