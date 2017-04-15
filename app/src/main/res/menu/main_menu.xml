@@ -6,7 +6,12 @@
         android:icon="@drawable/ic_add_white_24dp"
         app:showAsAction="ifRoom"/>
     <item android:id="@+id/menu_show_pending"
+        android:icon="@drawable/ic_list_black_24dp"
         android:title="Show Pending List" />
     <item android:id="@+id/menu_setting"
+        android:icon="@drawable/ic_settings_black_24dp"
         android:title="Setting" />
+    <item android:id="@+id/menu_logout"
+        android:icon="@drawable/ic_lock_open_black_24dp"
+        android:title="Logout" />
 </menu>

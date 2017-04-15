@@ -43,7 +43,8 @@
         <activity android:name=".AddFdActivity" />
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".PendingFdActivity" />
-        <activity android:name=".ChatRoomActivity"></activity>
+        <activity android:name=".ChatRoomActivity" />
+        <activity android:name=".ProfileSettingActivity"></activity>
     </application>
 
 </manifest>

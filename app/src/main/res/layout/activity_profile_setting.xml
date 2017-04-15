@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        android:id="@+id/appBarLayout">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/SeaGreen"
+            app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title="Setting"
+            app:logo="@drawable/ic_settings_white_24dp"
+            app:titleMarginStart="20dp"/>
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/icon_preview"
+            android:layout_marginTop="20dp"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:src="@drawable/ic_account_circle_50dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/search_user_button"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/ic_circle_blue"
+            android:src="@drawable/ic_camera_alt_white_24dp"
+            android:padding="15dp"
+            android:layout_alignBottom="@+id/icon_preview"
+            android:layout_alignRight="@+id/icon_preview"
+            android:layout_alignEnd="@+id/icon_preview">
+        </de.hdodenhof.circleimageview.CircleImageView>
+
+        <EditText
+            android:id="@+id/userID_entering_editText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Nickname"
+            android:textSize="20sp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/Black"
+            android:layout_alignBaseline="@+id/IDInput_hint"
+            android:drawableRight="@drawable/ic_mode_edit_black_24dp"
+            android:layout_alignBottom="@+id/IDInput_hint"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_toRightOf="@+id/IDInput_hint"
+            android:layout_toEndOf="@+id/IDInput_hint" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nickname:"
+            android:layout_marginLeft="20dp"
+            android:id="@+id/IDInput_hint"
+            android:textSize="25sp"
+            android:textColor="@color/TextColor"
+            android:layout_below="@id/icon_preview"
+            android:layout_marginTop="30dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <Button
+            android:id="@+id/finish_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@color/MainColor_light"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:focusable="true"
+            android:textAllCaps="false"
+            android:text="Finish"
+            android:textColor="@color/ButtonTextColor"
+            android:textSize="@dimen/simple_small_button_text_size"/>
+
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>

@@ -77,13 +77,12 @@ public class WelcomingActivity extends AppCompatActivity {
                                     if (response.body() == null) {
                                         Toast.makeText(WelcomingActivity.this, "Username or password incorrect", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        UserAccountManager.setLogin_info(new LoginInfo(username, password));
-
                                         Global.setLoginInfo(new LoginInfo(username, password));
                                         Global.setAccountInfo(response.body());
                                         Toast.makeText(WelcomingActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(WelcomingActivity.this, LoginActivity.class);
+                                        Intent intent = new Intent(WelcomingActivity.this, MainActivity.class);
                                         startActivity(intent);
+                                        finish();
                                     }
                                 }
                             } else {

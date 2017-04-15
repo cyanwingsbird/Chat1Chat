@@ -31,7 +31,6 @@ public class UserAccountManager {
     {
         Global.setAccountInfo(null);
         Global.setLoginInfo(null);
-   //     Global.setIsLogin(false);
         MyFileHandler.removeFolder();
     }
 

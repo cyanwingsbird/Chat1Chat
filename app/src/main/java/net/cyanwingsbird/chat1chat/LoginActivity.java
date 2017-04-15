@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +40,8 @@ public class LoginActivity extends AppCompatActivity {
     @Bind(R.id.editText_id) EditText editText_id;
     @Bind(R.id.editText_password) EditText editText_password;
     @Bind(R.id.textView_forget) TextView textView_forget;
+    @Bind(R.id.checkBox_remember) CheckBox checkBox_remember;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +53,6 @@ public class LoginActivity extends AppCompatActivity {
         button_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 username = editText_id.getText().toString();
                 password = editText_password.getText().toString();
                 mainLoadingDialog.show();
@@ -66,14 +68,16 @@ public class LoginActivity extends AppCompatActivity {
                                 if(response.body()==null) {
                                     Toast.makeText(LoginActivity.this, "Username or password incorrect", Toast.LENGTH_SHORT).show();
                                 }else {
-                                    UserAccountManager.setLogin_info(new LoginInfo(username, password));
-
+                                    if(checkBox_remember.isChecked()) {
+                                        UserAccountManager.setLogin_info(new LoginInfo(username, password));
+                                    }
                                     Global.setLoginInfo(new LoginInfo(username, password));
                                     Global.setAccountInfo(response.body());
 
                                     Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     startActivity(intent);
+                                    finish();
                                 }
                             }
                         } else {

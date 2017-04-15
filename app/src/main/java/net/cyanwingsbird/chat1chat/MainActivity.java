@@ -1,5 +1,6 @@
 package net.cyanwingsbird.chat1chat;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import net.cyanwingsbird.chat1chat.dataset.FriendList;
 import net.cyanwingsbird.chat1chat.networking.APIStatus;
 import net.cyanwingsbird.chat1chat.networking.RetrofitClient;
 import net.cyanwingsbird.chat1chat.networking.StatusUtils;
+import net.cyanwingsbird.chat1chat.userAccount.UserAccountManager;
 import net.cyanwingsbird.chat1chat.utility.MainLoadingDialog;
 
 import java.util.ArrayList;
@@ -134,11 +136,26 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             case R.id.menu_setting:
+                intent = new Intent(MainActivity.this, ProfileSettingActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.menu_logout:
                 dialog = new AlertDialog.Builder(MainActivity.this)
-                        .setMessage("Coming Soon")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        .setMessage("Are you sure to logout?")
+                        .setPositiveButton("No", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                UserAccountManager.logout();
+                                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                finish();
                             }
                         })
                         .create();
