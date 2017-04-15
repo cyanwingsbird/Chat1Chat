@@ -21,19 +21,30 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import net.cyanwingsbird.chat1chat.adapter.MessageAdapter;
 import net.cyanwingsbird.chat1chat.dataset.Message;
+import net.cyanwingsbird.chat1chat.networking.APIStatus;
+import net.cyanwingsbird.chat1chat.networking.RetrofitClient;
+import net.cyanwingsbird.chat1chat.networking.StatusUtils;
 import net.cyanwingsbird.chat1chat.userAccount.UserAccountManager;
 import net.cyanwingsbird.chat1chat.utility.MainLoadingDialog;
+import net.cyanwingsbird.chat1chat.utility.PictureConverter;
+
+import java.io.File;
+import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import okhttp3.FormBody;
 import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChatRoomActivity extends AppCompatActivity {
 
@@ -56,6 +67,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     TextView friend_nickname;
 
     MessageAdapter messageAdapter;
+    ArrayList<Message> messages = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,23 +103,48 @@ public class ChatRoomActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                /*
-                Message current_message = new Message();
-                current_message.setContent(texting_editText.getText().toString());
-                current_message.setSender(Integer.parseInt(Global.getAccountInfo().getUserid()));
+
+      //          Message current_message = new Message();
+       //         current_message.setContent(texting_editText.getText().toString());
+       //         current_message.setSender(Integer.parseInt(Global.getAccountInfo().getUserid()));
 
                 String username = Global.getLoginInfo().getUsername();
                 String password = Global.getLoginInfo().getPassword();
 
-
+                RetrofitClient retrofitClient = new RetrofitClient();
+                Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id, "1" , texting_editText.getText().toString(), null);
+                call.enqueue(new Callback<APIStatus>() {
+                    @Override
+                    public void onResponse(Call<APIStatus> call, Response<APIStatus> response) {
+                        loadingDialog.dismiss();
+                        if (response.isSuccessful()) {
+                            if (response.code() == 202) {
+                                if (response.body() == null) {
+                                    Toast.makeText(ChatRoomActivity.this, "Server error !", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(ChatRoomActivity.this, "Send success !!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } else {
+                            APIStatus error = StatusUtils.parseError(response);
+                            Toast.makeText(ChatRoomActivity.this, "Error code: " + error.status() + ": " + error.message(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<APIStatus> call, Throwable t) {
+                        loadingDialog.dismiss();
+                        Toast.makeText(ChatRoomActivity.this, "Network Connection fail !!", Toast.LENGTH_LONG).show();
+                        t.printStackTrace();
+                    }
+                });
 
                 texting_editText.setText(null);
                 InputMethodManager imm = (InputMethodManager) getSystemService(
                         INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-                messageAdapter.notifyDataSetChanged();
-                message_view.smoothScrollToPosition(messageSet.getMessages().size());
-*/
+//                messageAdapter.notifyDataSetChanged();
+//                message_view.smoothScrollToPosition(messages.size());
+
             }
         });
 

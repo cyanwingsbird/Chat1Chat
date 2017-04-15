@@ -138,4 +138,36 @@ public class RetrofitClient {
         }
         return  call;
     }
+
+    public Call sendMsg(String username, String password, String receiver_ID,
+                        String message_type, String message_content, File upload_file) {
+        RequestBody username_body = RequestBody.create(MediaType.parse("text/plain"), username);
+        RequestBody password_body = RequestBody.create(MediaType.parse("text/plain"), password);
+        RequestBody receiver_body = RequestBody.create(MediaType.parse("text/plain"), receiver_ID);
+        RequestBody message_type_body = RequestBody.create(MediaType.parse("text/plain"), message_type);
+        RequestBody message_content_body = null;
+        if(message_content!=null) {
+            message_content_body = RequestBody.create(MediaType.parse("text/plain"), message_content);
+        }
+
+        MultipartBody.Part file_part = null;
+        if(upload_file!=null)
+        {
+            RequestBody file_body = RequestBody.create(MediaType.parse("image/*"), upload_file);
+            file_part = MultipartBody.Part.createFormData("upload_file", upload_file.getName(), file_body);
+        }
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Global.getServerURL())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        Call<APIStatus> call = null;
+        try {
+            RetrofitInterface retrofitInterface = retrofit.create(RetrofitInterface.class);
+            call = retrofitInterface.sendMsg(username_body, password_body, receiver_body, message_type_body, message_content_body, file_part);
+        } catch (Exception e) {
+            Log.i(TAG, "Error " + e);
+        }
+        return  call;
+    }
 }
