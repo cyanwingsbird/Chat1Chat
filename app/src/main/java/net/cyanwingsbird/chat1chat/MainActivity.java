@@ -65,13 +65,11 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, ChatRoomActivity.class);
                 intent.putExtra("target_id", friendArrayList.get(position).getUserID());
                 intent.putExtra("target_name", friendArrayList.get(position).getDisplayName());
+                intent.putExtra("target_pic", friendArrayList.get(position).getProfilePic());
                 startActivity(intent);
             }
         });
-
     }
-
-
     @Override
     public void onResume() {
         super.onResume();
