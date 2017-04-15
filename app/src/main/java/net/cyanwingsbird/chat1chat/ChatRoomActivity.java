@@ -61,11 +61,13 @@ public class ChatRoomActivity extends AppCompatActivity {
 
     private final static int CAMERA = 0;
     private final static int PHOTO = 1;
+    private final static int AUDIO = 2;
 
 
     MainLoadingDialog loadingDialog;
     Toolbar toolbar;
     Bitmap bitmap = null;
+    Uri audio_uri;
 
     String target_id;
     String target_name;
@@ -236,15 +238,10 @@ public class ChatRoomActivity extends AppCompatActivity {
                 dialog.show();
                 return true;
             case R.id.menu_send_audio:
-                dialog = new AlertDialog.Builder(ChatRoomActivity.this)
-                        .setMessage("Coming Soon!")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        })
-                        .create();
-                dialog.show();
+                intent = new Intent();
+                intent.setType("audio/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select Audio"), AUDIO);
                 return true;
             case R.id.menu_send_video:
                 dialog = new AlertDialog.Builder(ChatRoomActivity.this)
@@ -277,6 +274,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Dialog dialog;
         if (resultCode != RESULT_CANCELED) {
+            // Image
             if ((requestCode == CAMERA || requestCode == PHOTO) && data != null) {
                 Uri uri = data.getData();
                 ContentResolver cr = this.getContentResolver();
@@ -287,7 +285,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                         bitmap = (Bitmap) data.getExtras().get("data");
                     }
                     dialog = new AlertDialog.Builder(ChatRoomActivity.this)
-                            .setMessage("Are you sure to send?")
+                            .setMessage("Are you sure to send the image?")
                             .setPositiveButton("No", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -313,6 +311,43 @@ public class ChatRoomActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Photo getting error!!", Toast.LENGTH_LONG).show();
                 }
             }
+
+
+            //Audio
+            if (requestCode == AUDIO && data != null) {
+                if (resultCode == RESULT_OK) {
+                    audio_uri = data.getData();
+                    dialog = new AlertDialog.Builder(ChatRoomActivity.this)
+                            .setMessage("Are you sure to send the audio?")
+                            .setPositiveButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            })
+                            .setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    loadingDialog.show();
+                                    RetrofitClient retrofitClient = new RetrofitClient();
+
+                                    File audio_file = new File(audio_uri.getPath());
+                                    if (audio_file == null) {
+                                        Toast.makeText(ChatRoomActivity.this, "File loading error", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id , "2", "", audio_file);
+                                        call.enqueue(sending_callback);
+                                    }
+                                }
+                            })
+                            .create();
+                    dialog.show();
+
+
+
+
+                }
+            }
+
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
