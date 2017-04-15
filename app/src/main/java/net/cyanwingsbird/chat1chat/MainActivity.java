@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 intent = new Intent(MainActivity.this, PendingFdActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.menu_setting:
+            case R.id.menu_profile:
                 intent = new Intent(MainActivity.this, ProfileSettingActivity.class);
                 startActivity(intent);
                 return true;

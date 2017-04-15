@@ -4,50 +4,72 @@ package net.cyanwingsbird.chat1chat.dataset;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-@SuppressWarnings("unused")
 public class Message {
 
-    @SerializedName("sender")
+    @SerializedName("messageID")
     @Expose
-    private Integer sender;
-    @SerializedName("content")
+    private String messageID;
+    @SerializedName("from_userID")
     @Expose
-    private String content;
+    private String fromUserID;
+    @SerializedName("to_userID")
+    @Expose
+    private String toUserID;
+    @SerializedName("send_time")
+    @Expose
+    private String sendTime;
+    @SerializedName("message_type")
+    @Expose
+    private String messageType;
+    @SerializedName("message_content")
+    @Expose
+    private String messageContent;
 
-    /**
-     *
-     * @return
-     * The sender
-     */
-    public Integer getSender() {
-        return sender;
+    public String getMessageID() {
+        return messageID;
     }
 
-    /**
-     *
-     * @param sender
-     * The sender
-     */
-    public void setSender(Integer sender) {
-        this.sender = sender;
+    public void setMessageID(String messageID) {
+        this.messageID = messageID;
     }
 
-    /**
-     *
-     * @return
-     * The content
-     */
-    public String getContent() {
-        return content;
+    public String getFromUserID() {
+        return fromUserID;
     }
 
-    /**
-     *
-     * @param content
-     * The content
-     */
-    public void setContent(String content) {
-        this.content = content;
+    public void setFromUserID(String fromUserID) {
+        this.fromUserID = fromUserID;
     }
 
+    public String getToUserID() {
+        return toUserID;
+    }
+
+    public void setToUserID(String toUserID) {
+        this.toUserID = toUserID;
+    }
+
+    public String getSendTime() {
+        return sendTime;
+    }
+
+    public void setSendTime(String sendTime) {
+        this.sendTime = sendTime;
+    }
+
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
+
+    public String getMessageContent() {
+        return messageContent;
+    }
+
+    public void setMessageContent(String messageContent) {
+        this.messageContent = messageContent;
+    }
 }

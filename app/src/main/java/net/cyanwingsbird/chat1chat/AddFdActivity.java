@@ -1,6 +1,5 @@
 package net.cyanwingsbird.chat1chat;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -44,6 +43,9 @@ public class AddFdActivity extends AppCompatActivity {
 
     @Bind(R.id.add_friend_button)
     Button add_friend_button;
+
+    @Bind(R.id.search_friend_button)
+    Button search_friend_button;
 
     @Bind(R.id.myUserIdText)
     TextView myUserIdText;
@@ -114,7 +116,6 @@ public class AddFdActivity extends AppCompatActivity {
                 String password = Global.getLoginInfo().getPassword();
                 String fdUserId = fd_userID_editText.getText().toString();
 
-
                 loadingDialog.show();
 
                 RetrofitClient retrofitClient = new RetrofitClient();
@@ -144,7 +145,11 @@ public class AddFdActivity extends AppCompatActivity {
                         t.printStackTrace();
                     }
                 });
-
+            }
+        });
+        search_friend_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
             }
         });

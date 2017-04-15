@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -62,12 +63,14 @@ public class ChatRoomActivity extends AppCompatActivity {
     private final static int CAMERA = 0;
     private final static int PHOTO = 1;
     private final static int AUDIO = 2;
+    private final static int VIDEO = 3;
 
 
     MainLoadingDialog loadingDialog;
     Toolbar toolbar;
     Bitmap bitmap = null;
     Uri audio_uri;
+    Uri videoUri;
 
     String target_id;
     String target_name;
@@ -76,7 +79,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     String password;
 
     @Bind(R.id.send_button)
-    Button send_button;
+    ImageView send_button;
     @Bind(R.id.texting_editText)
     EditText texting_editText;
     @Bind(R.id.message_view)
@@ -244,15 +247,12 @@ public class ChatRoomActivity extends AppCompatActivity {
                 startActivityForResult(Intent.createChooser(intent, "Select Audio"), AUDIO);
                 return true;
             case R.id.menu_send_video:
-                dialog = new AlertDialog.Builder(ChatRoomActivity.this)
-                        .setMessage("Coming Soon!")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        })
-                        .create();
-                dialog.show();
+                intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, VIDEO);
+                }else {
+                    Toast.makeText(ChatRoomActivity.this, "There are no camera app in your phone !!", Toast.LENGTH_LONG).show();
+                }
                 return true;
             case R.id.menu_send_location:
                 dialog = new AlertDialog.Builder(ChatRoomActivity.this)
@@ -312,7 +312,6 @@ public class ChatRoomActivity extends AppCompatActivity {
                 }
             }
 
-
             //Audio
             if (requestCode == AUDIO && data != null) {
                 if (resultCode == RESULT_OK) {
@@ -334,21 +333,61 @@ public class ChatRoomActivity extends AppCompatActivity {
                                     if (audio_file == null) {
                                         Toast.makeText(ChatRoomActivity.this, "File loading error", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id , "2", "", audio_file);
+                                        Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id , "5", "", audio_file);
                                         call.enqueue(sending_callback);
                                     }
                                 }
                             })
                             .create();
                     dialog.show();
-
-
-
-
                 }
             }
 
+            //Video
+            if (requestCode == VIDEO && resultCode == RESULT_OK && data != null) {
+                videoUri = data.getData();
+
+                dialog = new AlertDialog.Builder(ChatRoomActivity.this)
+                        .setMessage("Are you sure to send the video?")
+                        .setPositiveButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                loadingDialog.show();
+                                RetrofitClient retrofitClient = new RetrofitClient();
+
+                                File video_file = new File(getRealPathFromURI(videoUri));
+                                if (video_file == null) {
+                                    Toast.makeText(ChatRoomActivity.this, "File loading error", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id , "3", "", video_file);
+                                    call.enqueue(sending_callback);
+                                }
+                            }
+                        })
+                        .create();
+                dialog.show();
+            }
+
+
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) {
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
     }
 }
