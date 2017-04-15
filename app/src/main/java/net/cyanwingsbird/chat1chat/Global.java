@@ -14,6 +14,7 @@ public class Global {
     private final static String serverURL = "http://52.74.120.149/chat1chat/";
     private final static String fileFolderPath = Environment.getExternalStorageDirectory() + "/Chat1Chat";
     private final static String loginFilePath = getFileFolderPath() +"/login_data.json";
+    private final static String localTempFilePath = fileFolderPath+"/temp";
     private static LoginInfo loginInfo;
     private static AccountInfo accountInfo;
 
@@ -49,5 +50,10 @@ public class Global {
     public static void setAccountInfo(AccountInfo accountInfo) {
         Global.accountInfo = accountInfo;
     }
+
+    public static String getLocalTempFilePath() {
+        return localTempFilePath;
+    }
+
 
 }

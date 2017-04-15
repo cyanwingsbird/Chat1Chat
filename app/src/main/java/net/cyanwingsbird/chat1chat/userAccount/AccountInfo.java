@@ -16,7 +16,7 @@ public class AccountInfo {
     private String displayName;
     @SerializedName("profilePic")
     @Expose
-    private Object profilePic;
+    private String profilePic;
 
     /**
      * @return The userID
@@ -49,14 +49,14 @@ public class AccountInfo {
     /**
      * @return The profilePic
      */
-    public Object getProfilePic() {
+    public String getProfilePic() {
         return profilePic;
     }
 
     /**
      * @param profilePic The profilePic
      */
-    public void setProfilePic(Object profilePic) {
+    public void setProfilePic(String profilePic) {
         this.profilePic = profilePic;
     }
 

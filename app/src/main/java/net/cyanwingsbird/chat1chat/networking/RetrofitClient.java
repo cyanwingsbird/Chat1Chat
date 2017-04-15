@@ -6,8 +6,12 @@ import net.cyanwingsbird.chat1chat.Global;
 import net.cyanwingsbird.chat1chat.dataset.Friend;
 import net.cyanwingsbird.chat1chat.userAccount.AccountInfo;
 
+import java.io.File;
 import java.util.ArrayList;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -109,5 +113,29 @@ public class RetrofitClient {
         return  call;
     }
 
+    public Call changeProfile(String username, String password, String display_name, File upload_file) {
+        RequestBody username_body = RequestBody.create(MediaType.parse("text/plain"), username);
+        RequestBody password_body = RequestBody.create(MediaType.parse("text/plain"), password);
+        RequestBody display_body = RequestBody.create(MediaType.parse("text/plain"), display_name);
 
+        MultipartBody.Part file_part = null;
+        if(upload_file!=null)
+        {
+            RequestBody file_body = RequestBody.create(MediaType.parse("image/*"), upload_file);
+            file_part = MultipartBody.Part.createFormData("upload_file", upload_file.getName(), file_body);
+        }
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Global.getServerURL())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        Call<APIStatus> call = null;
+        try {
+            RetrofitInterface retrofitInterface = retrofit.create(RetrofitInterface.class);
+            call = retrofitInterface.changeProfile(username_body, password_body, display_body, file_part);
+        } catch (Exception e) {
+            Log.i(TAG, "Error " + e);
+        }
+        return  call;
+    }
 }
