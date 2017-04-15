@@ -42,17 +42,16 @@
                 android:text="Your User id: "
                 android:textSize="20dp"
                 android:textColor="@color/Black" />
-
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/myUserIdText"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="30dp"
                 android:text="Friend's User id:"
-                android:textColor="@color/Black"
-                android:textSize="25dp" />
+                android:textSize="30dp"
+                android:layout_below="@id/myUserIdText"
+                android:textColor="@color/Black" />
 
             <EditText
                 android:id="@+id/fd_userID_editText"
@@ -63,19 +62,24 @@
                 android:textAlignment="center"
                 android:layout_below="@+id/textView3"
                 android:textSize="25dp"
-                android:textColor="@color/Black" />
+                android:textColor="@color/Black"
+                android:layout_toLeftOf="@+id/add_friend_button"
+                android:layout_toStartOf="@+id/add_friend_button" />
 
             <Button
                 android:id="@+id/add_friend_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/fd_userID_editText"
-                android:layout_marginTop="10dp"
+                android:layout_alignBaseline="@+id/fd_userID_editText"
+                android:layout_alignBottom="@+id/fd_userID_editText"
+                android:layout_marginRight="5dp"
+                android:layout_toLeftOf="@+id/qr_friend_button"
+                android:background="@color/MainColor_light"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
                 android:text="Add"
                 android:textAllCaps="false"
-                android:textColor="@color/Black"
+                android:textColor="@color/White"
                 android:textSize="20sp" />
 
             <ImageView
@@ -83,19 +87,36 @@
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 app:srcCompat="@drawable/ic_account_circle_blue_24dp"
-                android:layout_below="@+id/add_friend_button"
+                android:layout_below="@+id/qr_friend_button"
                 android:layout_centerHorizontal="true" />
 
             <Button
                 android:id="@+id/button4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_toEndOf="@+id/imageView2"
-                android:layout_toRightOf="@+id/imageView2"
                 android:text="Add"
                 android:textAllCaps="false"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
+            <Button
+                android:id="@+id/qr_friend_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/ic_qr_scan"
+                android:layout_alignTop="@+id/add_friend_button" />
+            <Button
+                android:id="@+id/qr_gen_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignTop="@+id/myUserIdText"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/ic_qr_code"/>
 
 
         </RelativeLayout>
