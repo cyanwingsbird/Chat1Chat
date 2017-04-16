@@ -1,6 +1,7 @@
 package net.cyanwingsbird.chat1chat.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import com.squareup.picasso.Picasso;
 import net.cyanwingsbird.chat1chat.ChatRoomActivity;
 import net.cyanwingsbird.chat1chat.Global;
 import net.cyanwingsbird.chat1chat.R;
+import net.cyanwingsbird.chat1chat.VideoViewActivity;
 import net.cyanwingsbird.chat1chat.dataset.Message;
 
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public class MessageAdapter extends BaseAdapter {
     Context context;
     ArrayList<Message> items;
     ChatRoomActivity chatRoomActivity = null;
+    Message current_message;
 
     public MessageAdapter(Context context, ArrayList<Message> items) {
         this.context = context;
@@ -49,7 +52,7 @@ public class MessageAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        Message current_message = items.get(position);
+        current_message = items.get(position);
         if (chatRoomActivity == null) {
             chatRoomActivity = (ChatRoomActivity) context;
         }
@@ -61,37 +64,51 @@ public class MessageAdapter extends BaseAdapter {
         }
 
         if (isComMsg) {
+            //
             if(current_message.getMessageType().equals("2")) {
+                //Image
                 convertView = View.inflate(context.getApplicationContext(), R.layout.item_image_other, null);
                 ImageView tv_chatImage = (ImageView) convertView.findViewById(R.id.tv_chatImage);
                 Picasso.with(chatRoomActivity)
-                        .load(Global.getServerURL() + current_message.getMessageContent())
+                        .load(Global.getServerURL() + current_message.getMessageContent().substring(2))
                         .placeholder(R.drawable.ic_sync_black_24dp)
                         .into(tv_chatImage);
             }else if(current_message.getMessageType().equals("3")) {
+                //Video
                 convertView = View.inflate(context.getApplicationContext(), R.layout.item_video_other, null);
-                ImageView tv_chatVideo = (ImageView) convertView.findViewById(R.id.tv_chatVideo);
+            }else if(current_message.getMessageType().equals("4")) {
+                //Location
+                convertView = View.inflate(context.getApplicationContext(), R.layout.item_location_other, null);
+            }else if(current_message.getMessageType().equals("5")) {
+                //Audio
+                convertView = View.inflate(context.getApplicationContext(), R.layout.item_audio_other, null);
             }else{
+                //Text
                 convertView = View.inflate(context.getApplicationContext(), R.layout.item_chatting_other, null);
                 TextView tvContent = (TextView) convertView.findViewById(R.id.tv_chatcontent);
                 tvContent.setText(current_message.getMessageContent());
             }
 
-
-
-
         } else {
             if(current_message.getMessageType().equals("2")) {
+                //Image
                 convertView = View.inflate(context.getApplicationContext(), R.layout.item_image_myself, null);
                 ImageView tv_chatImage = (ImageView) convertView.findViewById(R.id.tv_chatImage);
                 Picasso.with(chatRoomActivity)
-                        .load(Global.getServerURL() + current_message.getMessageContent())
+                        .load(Global.getServerURL() + current_message.getMessageContent().substring(2))
                         .placeholder(R.drawable.ic_sync_black_24dp)
                         .into(tv_chatImage);
             }else if(current_message.getMessageType().equals("3")) {
+                //Video
                 convertView = View.inflate(context.getApplicationContext(), R.layout.item_video_myself, null);
-                ImageView tv_chatVideo = (ImageView) convertView.findViewById(R.id.tv_chatVideo);
+            }else if(current_message.getMessageType().equals("4")) {
+                //Location
+                convertView = View.inflate(context.getApplicationContext(), R.layout.item_location_myself, null);
+            }else if(current_message.getMessageType().equals("5")) {
+                //Audio
+                convertView = View.inflate(context.getApplicationContext(), R.layout.item_audio_myself, null);
             }else{
+                //Text
                 convertView = View.inflate(context.getApplicationContext(), R.layout.item_chatting_myself, null);
                 TextView tvContent = (TextView) convertView.findViewById(R.id.tv_chatcontent);
                 tvContent.setText(current_message.getMessageContent());

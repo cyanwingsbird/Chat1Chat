@@ -3,6 +3,7 @@ package net.cyanwingsbird.chat1chat;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -33,6 +34,7 @@ import net.cyanwingsbird.chat1chat.dataset.Message;
 import net.cyanwingsbird.chat1chat.networking.APIStatus;
 import net.cyanwingsbird.chat1chat.networking.RetrofitClient;
 import net.cyanwingsbird.chat1chat.networking.StatusUtils;
+import net.cyanwingsbird.chat1chat.utility.GPSTracker;
 import net.cyanwingsbird.chat1chat.utility.MainLoadingDialog;
 import net.cyanwingsbird.chat1chat.utility.PictureConverter;
 
@@ -110,7 +112,6 @@ public class ChatRoomActivity extends AppCompatActivity {
         username = Global.getLoginInfo().getUsername();
         password = Global.getLoginInfo().getPassword();
 
-
         if (target_pic != null) {
             String friendPictureUrl = Global.getServerURL() + target_pic.substring(2);
             Picasso.with(getApplicationContext())
@@ -136,7 +137,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                       //             loopingRenewMessage();
+                                    loopingRenewMessage();
                                 }
                             });
                         }
@@ -301,15 +302,45 @@ public class ChatRoomActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.menu_send_location:
-                dialog = new AlertDialog.Builder(ChatRoomActivity.this)
-                        .setMessage("Coming Soon!")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        })
-                        .create();
-                dialog.show();
+                GPSTracker gps = new GPSTracker(ChatRoomActivity.this);
+
+                // check if GPS enabled
+                if(gps.canGetLocation()){
+
+                    final double latitude = gps.getLatitude();
+                    final double longitude = gps.getLongitude();
+
+                    dialog = new AlertDialog.Builder(ChatRoomActivity.this)
+                            .setMessage("Your Location is: \nLat:" + latitude + "\nLong: " + longitude+ "\nAre you sure to send the location?")
+                            .setPositiveButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            })
+                            .setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    loadingDialog.show();
+                                    RetrofitClient retrofitClient = new RetrofitClient();
+
+                                    Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id, "4", latitude+","+longitude, null);
+                                    call.enqueue(sending_callback);
+                                }
+                            })
+                            .create();
+                    dialog.show();
+
+
+
+                 //   intent = new Intent(android.content.Intent.ACTION_VIEW,
+                  //          Uri.parse("http://maps.google.com/maps?q="+latitude+","+longitude));
+                  //  startActivity(intent);
+                }else{
+                    // can't get location
+                    // GPS or Network is not enabled
+                    // Ask user to enable GPS/network in settings
+                    gps.showSettingsAlert();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -375,7 +406,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                     loadingDialog.show();
                                     RetrofitClient retrofitClient = new RetrofitClient();
 
-                                    File audio_file = new File(audio_uri.getPath());
+                                    File audio_file = new File(getRealPathFromURI(audio_uri));
                                     if (audio_file == null) {
                                         Toast.makeText(ChatRoomActivity.this, "File loading error", Toast.LENGTH_SHORT).show();
                                     } else {
@@ -474,11 +505,12 @@ public class ChatRoomActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     if (response.code() == 202) {
                         if(response.body()==null) {
-                            Toast.makeText(ChatRoomActivity.this, "Say something with your friend ^_^", Toast.LENGTH_SHORT).show();
                         }else {
-                            messages.clear();
-                            messages.addAll(response.body());
-                            messageAdapter.notifyDataSetChanged();
+                            if(response.body().size()>messages.size()) {
+                                messages.clear();
+                                messages.addAll(response.body());
+                                messageAdapter.notifyDataSetChanged();
+                            }
                         }
                     }
                 } else {
@@ -522,6 +554,16 @@ public class ChatRoomActivity extends AppCompatActivity {
             return null;
         }
     }
+    @Override
+    public void onResume(){
+        super.onResume();
+        isLoopingReceive = true;
 
+    }
+    @Override
+    public void onPause(){
+        super.onPause();
+        isLoopingReceive = false;
 
+    }
 }

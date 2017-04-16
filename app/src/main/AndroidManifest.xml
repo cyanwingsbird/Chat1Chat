@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <uses-feature android:name="android.hardware.camera"/>
@@ -51,7 +50,8 @@
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".PendingFdActivity" />
         <activity android:name=".ChatRoomActivity" />
-        <activity android:name=".ProfileSettingActivity"></activity>
+        <activity android:name=".ProfileSettingActivity"/>
+        <activity android:name=".VideoViewActivity"/>
     </application>
 
 </manifest>
