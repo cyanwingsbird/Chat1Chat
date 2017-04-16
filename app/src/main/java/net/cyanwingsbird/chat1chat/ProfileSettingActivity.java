@@ -150,7 +150,7 @@ public class ProfileSettingActivity extends AppCompatActivity {
 
                 RetrofitClient retrofitClient = new RetrofitClient();
                 Call<APIStatus> call;
-                File file_pic = PictureConverter.bitmapToFile(bitmap);
+                File file_pic = PictureConverter.bitmapToFile(getApplicationContext().getFilesDir(),bitmap);
                 if (bitmap != null) {
                     call = retrofitClient.changeProfile(username, password, name_entering_editText.getText().toString(), file_pic);
                 } else {

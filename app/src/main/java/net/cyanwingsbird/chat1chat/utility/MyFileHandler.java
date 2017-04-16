@@ -64,9 +64,10 @@ public class MyFileHandler {
     public static Boolean makeFolder()
     {
         File folderPath = new File(Global.getFileFolderPath());
+
         if(!folderPath.isDirectory())
         {
-            folderPath.mkdir();
+            folderPath.mkdirs();
             return true;
         }
         return false;

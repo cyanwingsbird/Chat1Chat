@@ -454,7 +454,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     loadingDialog.show();
                                     RetrofitClient retrofitClient = new RetrofitClient();
-                                    File file_pic = PictureConverter.bitmapToFile(bitmap);
+                                    File file_pic = PictureConverter.bitmapToFile(getApplicationContext().getFilesDir(),bitmap);
                                     if (bitmap == null) {
                                         Toast.makeText(ChatRoomActivity.this, "File loading error", Toast.LENGTH_SHORT).show();
                                     } else {
