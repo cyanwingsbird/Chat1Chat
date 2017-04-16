@@ -180,10 +180,12 @@ public class AddFdActivity extends AppCompatActivity {
                                     Toast.makeText(AddFdActivity.this, "User ID not exist !", Toast.LENGTH_SHORT).show();
                                 }else {
                                     search_fd = response.body();
-                                    Picasso.with(AddFdActivity.this)
-                                            .load(Global.getServerURL() + search_fd.getProfilePic().substring(2))
-                                            .placeholder(R.drawable.ic_account_circle_blue_24dp)
-                                            .into(imageView_fd);
+                                    if(search_fd.getProfilePic()!=null) {
+                                        Picasso.with(AddFdActivity.this)
+                                                .load(Global.getServerURL() + search_fd.getProfilePic().substring(2))
+                                                .placeholder(R.drawable.ic_account_circle_blue_24dp)
+                                                .into(imageView_fd);
+                                    }
                                     textView_friend_nickname.setVisibility(View.VISIBLE);
                                     textView_friend_nickname.setText(search_fd.getDisplayName());
                                 }

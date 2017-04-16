@@ -61,6 +61,7 @@ public class ProfileSettingActivity extends AppCompatActivity {
 
     private final static int CAMERA = 0;
     private final static int PHOTO = 1;
+    String profilePicURL;
 
     String username;
     String password;
@@ -86,12 +87,24 @@ public class ProfileSettingActivity extends AppCompatActivity {
         });
 
         if (Global.getAccountInfo().getProfilePic() != null) {
-            String profilePicURL = Global.getServerURL() + Global.getAccountInfo().getProfilePic().substring(2);
+            profilePicURL = Global.getServerURL() + Global.getAccountInfo().getProfilePic().substring(2);
             Picasso.with(getApplicationContext()).invalidate(profilePicURL);
             Picasso.with(getApplicationContext())
                     .load(profilePicURL)
                     .placeholder(R.drawable.ic_account_circle_50dp)
-                    .into(icon_preview);
+                    .into(icon_preview, new com.squareup.picasso.Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+                        @Override
+                        public void onError() {
+                            Picasso.with(getApplicationContext())
+                                    .load(profilePicURL)
+                                    .placeholder(R.drawable.ic_account_circle_50dp)
+                                    .into(icon_preview, this);
+                        }
+                    });
         }
         if (Global.getAccountInfo().getDisplayName() != null) {
             name_entering_editText.setText(Global.getAccountInfo().getDisplayName());
@@ -169,8 +182,10 @@ public class ProfileSettingActivity extends AppCompatActivity {
                     }
                 });
 
-                String profilePicURL = Global.getServerURL() + Global.getAccountInfo().getProfilePic().substring(2);
-                Picasso.with(getApplicationContext()).invalidate(profilePicURL);
+                if(Global.getAccountInfo().getProfilePic()!=null) {
+                    String profilePicURL = Global.getServerURL() + Global.getAccountInfo().getProfilePic().substring(2);
+                    Picasso.with(getApplicationContext()).invalidate(profilePicURL);
+                }
                 Global.getAccountInfo().setDisplayName(name_entering_editText.getText().toString());
 
                 finish_button.setEnabled(false);
