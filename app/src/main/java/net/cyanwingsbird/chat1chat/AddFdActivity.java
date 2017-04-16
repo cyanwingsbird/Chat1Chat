@@ -221,7 +221,7 @@ public class AddFdActivity extends AppCompatActivity {
         ImageView imageView = new ImageView(this);
         imageView.setImageBitmap(bitmap);
         builder.addContentView(imageView, new RelativeLayout.LayoutParams(
-                800,800));
+                600,600));
         builder.show();
     }
 
