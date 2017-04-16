@@ -5,7 +5,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/SeaGreen</item>
         <item name="colorPrimaryDark">@color/DarkGreen</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/MainColor_light</item>
     </style>
 
     <style name="CustomDialog" parent="@android:style/Theme.Dialog">

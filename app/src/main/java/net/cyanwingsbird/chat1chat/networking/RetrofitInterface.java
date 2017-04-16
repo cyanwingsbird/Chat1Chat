@@ -60,6 +60,9 @@ public interface RetrofitInterface {
     @POST("getMsg.php")
     Call<ArrayList<Message>> getMsg(@Field("username") String username, @Field("password") String password, @Field("friendID") String friendID);
 
+    @FormUrlEncoded
+    @POST("getFd.php")
+    Call<Friend> getFd(@Field("username") String username, @Field("password") String password, @Field("fdUserID") String fdUserID);
 
 
 }

@@ -1,6 +1,8 @@
 package net.cyanwingsbird.chat1chat;
 
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,6 +11,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -20,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -40,6 +44,7 @@ import net.cyanwingsbird.chat1chat.utility.PictureConverter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.Bind;
@@ -63,6 +68,10 @@ public class ChatRoomActivity extends AppCompatActivity {
     Bitmap bitmap = null;
     Uri audio_uri;
     Uri videoUri;
+
+    private ClipboardManager myClipboard;
+    private ClipData myClip;
+    private MediaPlayer mp;
 
     Boolean isLoopingReceive = true;
 
@@ -103,6 +112,8 @@ public class ChatRoomActivity extends AppCompatActivity {
         });
         loadingDialog = new MainLoadingDialog(this);
 
+        myClipboard = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+
         target_id = getIntent().getStringExtra("target_id");
         target_name = getIntent().getStringExtra("target_name");
         target_pic = getIntent().getStringExtra("target_pic");
@@ -130,10 +141,10 @@ public class ChatRoomActivity extends AppCompatActivity {
             public void run() {
                 while (true) {
                     try {
-                        sleep(3000);
+                        sleep(1500);
                     } catch (InterruptedException e) {
                     } finally {
-                        if(isLoopingReceive) {
+                        if (isLoopingReceive) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -245,6 +256,82 @@ public class ChatRoomActivity extends AppCompatActivity {
             }
         });
 
+        message_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Message current_message = messages.get(position);
+                Intent intent;
+                if (current_message.getMessageType().equals("2")) {
+                    //Image
+                    intent = new Intent();
+                    intent.setClass(ChatRoomActivity.this, ImageViewActivity.class);
+                    intent.putExtra("imageURL", Global.getServerURL() + current_message.getMessageContent().substring(2));
+                    startActivity(intent);
+                } else if (current_message.getMessageType().equals("3")) {
+                    //Video
+                    intent = new Intent();
+                    intent.setClass(ChatRoomActivity.this, VideoViewActivity.class);
+                    intent.putExtra("videoURL", Global.getServerURL() + current_message.getMessageContent().substring(2));
+                    startActivity(intent);
+                } else if (current_message.getMessageType().equals("4")) {
+                    //Location
+                    intent = new Intent(android.content.Intent.ACTION_VIEW,
+                            Uri.parse("http://maps.google.com/maps?q="+current_message.getMessageContent()));
+                    startActivity(intent);
+                } else if (current_message.getMessageType().equals("5")) {
+                    //Audio
+                    loadingDialog.show();
+                    if (audio_uri != null) {
+                        if (mp != null) {
+                            mp.release();
+                            mp = null;
+                            loadingDialog.dismiss();
+                        }
+                        if (mp == null) {
+                            try {
+                                mp = new MediaPlayer();
+                                mp.setDataSource(audio_uri.toString());
+
+                                mp.prepare();
+                                mp.start();
+                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        mp.release();
+                                    }
+                                });
+                                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                    @Override
+                                    public void onPrepared(MediaPlayer mp) {
+                                        loadingDialog.dismiss();
+                                    }
+                                });
+                                mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                                    @Override
+                                    public boolean onError(MediaPlayer mp, int what, int extra) {
+                                        loadingDialog.dismiss();
+                                        Toast.makeText(ChatRoomActivity.this, "Network Connection Fail !!", Toast.LENGTH_SHORT).show();
+                                        return false;
+                                    }
+                                });
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                loadingDialog.dismiss();
+                            }
+                            loadingDialog.dismiss();
+                        }
+                    }
+                    loadingDialog.dismiss();
+                } else {
+                    //Text
+                    String text = current_message.getMessageContent();
+                    myClip = ClipData.newPlainText("text", text);
+                    myClipboard.setPrimaryClip(myClip);
+                    Toast.makeText(getApplicationContext(), "Text Copied", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
 
     }
 
@@ -305,13 +392,13 @@ public class ChatRoomActivity extends AppCompatActivity {
                 GPSTracker gps = new GPSTracker(ChatRoomActivity.this);
 
                 // check if GPS enabled
-                if(gps.canGetLocation()){
+                if (gps.canGetLocation()) {
 
                     final double latitude = gps.getLatitude();
                     final double longitude = gps.getLongitude();
 
                     dialog = new AlertDialog.Builder(ChatRoomActivity.this)
-                            .setMessage("Your Location is: \nLat:" + latitude + "\nLong: " + longitude+ "\nAre you sure to send the location?")
+                            .setMessage("Your Location is: \nLat:" + latitude + "\nLong: " + longitude + "\nAre you sure to send the location?")
                             .setPositiveButton("No", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -323,19 +410,13 @@ public class ChatRoomActivity extends AppCompatActivity {
                                     loadingDialog.show();
                                     RetrofitClient retrofitClient = new RetrofitClient();
 
-                                    Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id, "4", latitude+","+longitude, null);
+                                    Call<APIStatus> call = retrofitClient.sendMsg(username, password, target_id, "4", latitude + "," + longitude, null);
                                     call.enqueue(sending_callback);
                                 }
                             })
                             .create();
                     dialog.show();
-
-
-
-                 //   intent = new Intent(android.content.Intent.ACTION_VIEW,
-                  //          Uri.parse("http://maps.google.com/maps?q="+latitude+","+longitude));
-                  //  startActivity(intent);
-                }else{
+                } else {
                     // can't get location
                     // GPS or Network is not enabled
                     // Ask user to enable GPS/network in settings
@@ -467,9 +548,9 @@ public class ChatRoomActivity extends AppCompatActivity {
                 loadingDialog.dismiss();
                 if (response.isSuccessful()) {
                     if (response.code() == 202) {
-                        if(response.body()==null) {
+                        if (response.body() == null) {
                             Toast.makeText(ChatRoomActivity.this, "Say something with your friend ^_^", Toast.LENGTH_SHORT).show();
-                        }else {
+                        } else {
                             messages.clear();
                             messages.addAll(response.body());
                             messageAdapter.notifyDataSetChanged();
@@ -481,6 +562,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                     Toast.makeText(ChatRoomActivity.this, "Error code: " + error.status() + ": " + error.message(), Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(Call<ArrayList<Message>> call, Throwable t) {
                 loadingDialog.dismiss();
@@ -504,9 +586,9 @@ public class ChatRoomActivity extends AppCompatActivity {
                 loadingDialog.dismiss();
                 if (response.isSuccessful()) {
                     if (response.code() == 202) {
-                        if(response.body()==null) {
-                        }else {
-                            if(response.body().size()>messages.size()) {
+                        if (response.body() == null) {
+                        } else {
+                            if (response.body().size() > messages.size()) {
                                 messages.clear();
                                 messages.addAll(response.body());
                                 messageAdapter.notifyDataSetChanged();
@@ -518,6 +600,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                     Toast.makeText(ChatRoomActivity.this, "Error code: " + error.status() + ": " + error.message(), Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(Call<ArrayList<Message>> call, Throwable t) {
                 loadingDialog.dismiss();
@@ -548,22 +631,26 @@ public class ChatRoomActivity extends AppCompatActivity {
     }
 
     public String getTarget_profile() {
-        if(target_pic!=null) {
+        if (target_pic != null) {
             return Global.getServerURL() + target_pic.substring(2);
-        }else {
+        } else {
             return null;
         }
     }
+
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         isLoopingReceive = true;
 
     }
     @Override
-    public void onPause(){
+    protected void onPause() {
         super.onPause();
         isLoopingReceive = false;
-
+        if (mp != null) {
+            mp.release();
+            mp = null;
+        };
     }
 }

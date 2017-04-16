@@ -24,7 +24,9 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
+import com.squareup.picasso.Picasso;
 
+import net.cyanwingsbird.chat1chat.dataset.Friend;
 import net.cyanwingsbird.chat1chat.networking.APIStatus;
 import net.cyanwingsbird.chat1chat.networking.RetrofitClient;
 import net.cyanwingsbird.chat1chat.networking.StatusUtils;
@@ -50,8 +52,8 @@ public class AddFdActivity extends AppCompatActivity {
     @Bind(R.id.myUserIdText)
     TextView myUserIdText;
 
-    @Bind(R.id.imageView2)
-    ImageView imageView2;
+    @Bind(R.id.imageView_fd)
+    ImageView imageView_fd;
 
     @Bind(R.id.qr_friend_button)
     Button qr_friend_button;
@@ -59,7 +61,13 @@ public class AddFdActivity extends AppCompatActivity {
     @Bind(R.id.qr_gen_button)
     Button qr_gen_button;
 
+    @Bind(R.id.textView_friend_nickname)
+    TextView textView_friend_nickname;
+
+
     MainLoadingDialog loadingDialog;
+
+    Friend search_fd;
 
     @Override
 
@@ -112,6 +120,48 @@ public class AddFdActivity extends AppCompatActivity {
         add_friend_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(search_fd==null) {
+                    Toast.makeText(AddFdActivity.this, "You should search your friend using the id first !", Toast.LENGTH_SHORT).show();
+                }else {
+                    String username = Global.getLoginInfo().getUsername();
+                    String password = Global.getLoginInfo().getPassword();
+                    String fdUserId = search_fd.getUserID();
+
+                    loadingDialog.show();
+
+                    RetrofitClient retrofitClient = new RetrofitClient();
+                    Call<APIStatus> call = retrofitClient.addFd(username, password, fdUserId);
+                    call.enqueue(new Callback<APIStatus>() {
+                        @Override
+                        public void onResponse(Call<APIStatus> call, Response<APIStatus> response) {
+                            loadingDialog.dismiss();
+                            if (response.isSuccessful()) {
+                                if (response.code() == 202) {
+                                    if (response.body() == null) {
+                                        Toast.makeText(AddFdActivity.this, "User ID not exist !", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(AddFdActivity.this, "Request success !", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            } else {
+                                APIStatus error = StatusUtils.parseError(response);
+                                Toast.makeText(AddFdActivity.this, "Error code: " + error.status() + ": " + error.message(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<APIStatus> call, Throwable t) {
+                            loadingDialog.dismiss();
+                            Toast.makeText(AddFdActivity.this, "Network Connection fail !!", Toast.LENGTH_LONG).show();
+                            t.printStackTrace();
+                        }
+                    });
+                }
+            }
+        });
+        search_friend_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 String username = Global.getLoginInfo().getUsername();
                 String password = Global.getLoginInfo().getPassword();
                 String fdUserId = fd_userID_editText.getText().toString();
@@ -119,38 +169,37 @@ public class AddFdActivity extends AppCompatActivity {
                 loadingDialog.show();
 
                 RetrofitClient retrofitClient = new RetrofitClient();
-                Call<APIStatus> call = retrofitClient.addFd(username, password, fdUserId);
-                call.enqueue(new Callback<APIStatus>() {
+                Call<Friend> call = retrofitClient.getFd(username, password, fdUserId);
+                call.enqueue(new Callback<Friend>() {
                     @Override
-                    public void onResponse(Call<APIStatus> call, Response<APIStatus> response) {
+                    public void onResponse(Call<Friend> call, Response<Friend> response) {
                         loadingDialog.dismiss();
                         if (response.isSuccessful()) {
                             if (response.code() == 202) {
                                 if(response.body()==null) {
                                     Toast.makeText(AddFdActivity.this, "User ID not exist !", Toast.LENGTH_SHORT).show();
                                 }else {
-                                    Toast.makeText(AddFdActivity.this, "Request success !", Toast.LENGTH_SHORT).show();
+                                    search_fd = response.body();
+                                    Picasso.with(AddFdActivity.this)
+                                            .load(Global.getServerURL() + search_fd.getProfilePic().substring(2))
+                                            .placeholder(R.drawable.ic_account_circle_blue_24dp)
+                                            .into(imageView_fd);
+                                    textView_friend_nickname.setVisibility(View.VISIBLE);
+                                    textView_friend_nickname.setText(search_fd.getDisplayName());
                                 }
                             }
                         } else {
-
                             APIStatus error = StatusUtils.parseError(response);
                             Toast.makeText(AddFdActivity.this, "Error code: " + error.status() + ": " + error.message(), Toast.LENGTH_SHORT).show();
                         }
                     }
                     @Override
-                    public void onFailure(Call<APIStatus> call, Throwable t) {
+                    public void onFailure(Call<Friend> call, Throwable t) {
                         loadingDialog.dismiss();
                         Toast.makeText(AddFdActivity.this, "Network Connection fail !!", Toast.LENGTH_LONG).show();
                         t.printStackTrace();
                     }
                 });
-            }
-        });
-        search_friend_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
             }
         });
 
@@ -184,8 +233,8 @@ public class AddFdActivity extends AppCompatActivity {
                 Toast.makeText(this, "You cancelled the scanning", Toast.LENGTH_LONG).show();
             }
             else {
-                Toast.makeText(this, result.getContents(),Toast.LENGTH_LONG).show();
                 fd_userID_editText.setText(result.getContents());
+                search_friend_button.performClick();
             }
         }
         else {
