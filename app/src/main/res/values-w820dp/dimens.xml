@@ -1,0 +1,45 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="activity_horizontal_margin_big">40dp</dimen>
+    <dimen name="activity_vertical_margin_big">40dp</dimen>
+
+    <dimen name="welcoming_icon_height">250dp</dimen>
+    <dimen name="welcoming_icon_weight">250dp</dimen>
+
+    <dimen name="texting_box_height">50dp</dimen>
+    <dimen name="profile_height">50dp</dimen>
+    <dimen name="profile_width">50dp</dimen>
+
+    <dimen name="welcoming_text_size">40sp</dimen>
+    <dimen name="simple_text_size_large">40sp</dimen>
+    <dimen name="simple_text_size">30sp</dimen>
+    <dimen name="simple_text_size_small">25sp</dimen>
+    <dimen name="simple_text_size_very_small">15sp</dimen>
+    <dimen name="action_bar_text_size">30sp</dimen>
+    <dimen name="simple_button_text_size">30sp</dimen>
+    <dimen name="simple_small_button_text_size">25sp</dimen>
+    <dimen name="simple_icon_height">35dp</dimen>
+    <dimen name="simple_icon_width">35dp</dimen>
+    <dimen name="simple_icon_height_small">30dp</dimen>
+    <dimen name="simple_icon_width_small">30dp</dimen>
+    <dimen name="simple_video_width">270dp</dimen>
+    <dimen name="simple_video_height">180dp</dimen>
+    <dimen name="simple_large_icon_width">70dp</dimen>
+    <dimen name="simple_large_icon_height">70dp</dimen>
+    <dimen name="simple_profile_icon_height">80dp</dimen>
+    <dimen name="simple_profile_icon_width">80dp</dimen>
+    <dimen name="welcome_icon_top">60dp</dimen>
+    <dimen name="simple_header_icon_height">70dp</dimen>
+    <dimen name="simple_header_icon_width">70dp</dimen>
+    <dimen name="simple_setting_icon_height">70dp</dimen>
+    <dimen name="simple_setting_icon_width">70dp</dimen>
+    <dimen name="simple_margin">4dp</dimen>
+    <dimen name="simple_big_margin">10dp</dimen>
+    <dimen name="simple_small_margin">2dp</dimen>
+    <dimen name="tab_bar_length">35dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+
+
+</resources>
